@@ -10,6 +10,8 @@ describe('NoResponse', function () {
 
   beforeEach(function () {
     config = {
+      collaboratorReactionRequiredLabel: 'collaborator-reaction-required',
+      collaboratorReactionRequiredColor: 'faad4d',
       responseRequiredLabel: 'more-information-needed',
       responseRequiredColor: 'ffffff'
     }
@@ -67,6 +69,28 @@ describe('NoResponse', function () {
       })
     })
 
+    it('creates a collaboratorReactionRequiredLabel if one does not exist', async function () {
+      github.issues.getLabel = expect.createSpy().andReturn(Promise.reject(new Error()))
+
+      const noResponse = new NoResponse(context, config, logger)
+
+      await noResponse.sweep()
+
+      expect(github.issues.getLabel).toHaveBeenCalled()
+      expect(github.issues.getLabel.calls[0].arguments[0]).toMatch({
+        owner: 'probot',
+        repo: 'testing-things',
+        name: 'more-information-needed'
+      })
+      expect(github.issues.createLabel).toHaveBeenCalled()
+      expect(github.issues.createLabel.calls[1].arguments[0]).toMatch({
+        owner: 'probot',
+        repo: 'testing-things',
+        name: 'collaborator-reaction-required',
+        color: 'faad4d'
+      })
+    })
+
     it('does not create a responseRequiredLabel if it already exists', async function () {
       const noResponse = new NoResponse(context, config, logger)
 
@@ -77,6 +101,20 @@ describe('NoResponse', function () {
         owner: 'probot',
         repo: 'testing-things',
         name: 'more-information-needed'
+      })
+      expect(github.issues.createLabel).toNotHaveBeenCalled()
+    })
+
+    it('does not create a collaboratorReactionRequiredLabel if it already exists', async function () {
+      const noResponse = new NoResponse(context, config, logger)
+
+      await noResponse.sweep()
+
+      expect(github.issues.getLabel).toHaveBeenCalled()
+      expect(github.issues.getLabel.calls[0].arguments[0]).toMatch({
+        owner: 'probot',
+        repo: 'testing-things',
+        name: 'collaborator-reaction-required'
       })
       expect(github.issues.createLabel).toNotHaveBeenCalled()
     })
