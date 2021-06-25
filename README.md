@@ -14,7 +14,7 @@ This allows maintainers to label an issue as requiring more information from the
 If the information is not received in a timely manner, the issue will be closed.
 If the original author comes back and gives more information, the label is replaced with another one (maintainer attention
 required) and the issue is reopened if necessary.
-The original repo would just delete the label, but this form alternates labels instead.
+The original repo would just delete the label, but this fork, **Čekač**, alternates labels instead.
 
 ### Scheduled
 
